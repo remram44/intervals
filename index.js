@@ -1,4 +1,5 @@
 let dates = [];
+let format = 'interval';
 
 function pad(s, n) {
   s = '' + s;
@@ -41,8 +42,12 @@ function redraw() {
   let xdata = [];
   let ydata = [];
   for(let i = 0; i < dates.length - 1; ++i) {
-    xdata.push(dates[i + 1];
-    ydata.push(dates[i + 1].getTime() - dates[i].getTime());
+    xdata.push(dates[i + 1]);
+    if(format === 'bpm') {
+      ydata.push(60000.0 / (dates[i + 1].getTime() - dates[i].getTime()));
+    } else {
+      ydata.push((dates[i + 1].getTime() - dates[i].getTime()) / 1000.0);
+    }
   }
 
   // Prepare X axis
@@ -92,7 +97,7 @@ function redraw() {
       ctx.lineTo(35, mapY(y));
       ctx.stroke();
 
-      ctx.fillText('' + (Math.floor(y / 10) / 100), 0, mapY(y));
+      ctx.fillText('' + (Math.floor(y * 10) / 10), 0, mapY(y));
     }
   }
 
@@ -154,4 +159,16 @@ resize();
 
   button.innerText = "Tap here";
   button.removeAttribute('disabled');
+}
+
+// Setup dropdown
+{
+  let dropdown = document.getElementById('format');
+  dropdown.value = 'interval';
+  dropdown.addEventListener('change', (e) => {
+    if(dropdown.value !== format) {
+      format = dropdown.value;
+      redraw();
+    }
+  });
 }
