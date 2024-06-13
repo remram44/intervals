@@ -37,6 +37,14 @@ function redraw() {
     return;
   }
 
+  // Prepare data
+  let xdata = [];
+  let ydata = [];
+  for(let i = 0; i < dates.length - 1; ++i) {
+    xdata.push(dates[i + 1];
+    ydata.push(dates[i + 1].getTime() - dates[i].getTime());
+  }
+
   // Prepare X axis
   let mapX;
   {
@@ -50,11 +58,10 @@ function redraw() {
 
   // Prepare Y axis
   let mapY;
-  let max = dates[1].getTime() - dates[0].getTime();
-  for(let i = 1; i < dates.length - 1; ++i) {
-    let interval = dates[i + 1].getTime() - dates[i].getTime();
-    if(interval > max) {
-      max = interval;
+  let max = ydata[0];
+  for(let y of ydata) {
+    if(y > max) {
+      max = y;
     }
   }
   {
@@ -109,23 +116,21 @@ function redraw() {
     );
   }
   ctx.beginPath();
-  for(let i = 1; i < dates.length - 1; ++i) {
-    let interval1 = dates[i].getTime() - dates[i - 1].getTime();
-    let interval2 = dates[i + 1].getTime() - dates[i].getTime();
+  for(let i = 0; i < dates.length - 1; ++i) {
     ctx.moveTo(
-      mapX(dates[i].getTime()),
-      mapY(interval1),
+      mapX(xdata[i]),
+      mapY(ydata[i]),
     );
     ctx.lineTo(
-      mapX(dates[i + 1].getTime()),
-      mapY(interval2),
+      mapX(xdata[i + 1]),
+      mapY(ydata[i + 1]),
     );
 
-    cross(dates[i].getTime(), interval1);
+    cross(xdata[i], ydata[i]);
   }
   cross(
-    dates[dates.length - 1].getTime(),
-    dates[dates.length - 1].getTime() - dates[dates.length - 2].getTime(),
+    xdata[dates.length - 1],
+    ydata[dates.length - 1],
   );
   ctx.stroke();
 }
@@ -141,7 +146,7 @@ resize();
 // Setup button
 {
   let button = document.getElementById('tap');
-    button.addEventListener('click', (e) => {
+  button.addEventListener('click', (e) => {
     e.preventDefault();
 
     addPoint(new Date());
